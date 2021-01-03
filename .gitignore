@@ -2,9 +2,13 @@ venv/
 __pycache__/
 
 *.swp
+*.o
+*.so
 
 build/
 dist/
 
 .hypothesis/
 .python-version
+
+attention.egg-info/
