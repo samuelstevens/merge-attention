@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+
+*.swp
+
+build/
+dist/
+
+.hypothesis/
+.python-version
