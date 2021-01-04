@@ -6,8 +6,7 @@ import hypothesis.strategies as st
 import numpy as np
 from hypothesis import given
 
-import attention
-import reference
+from attention import optimized, reference
 
 np.seterr("raise")
 
@@ -32,6 +31,6 @@ def array_tokens_word_ends(draw):
 def test_against_reference(args):
     attn, tokens, word_ends = args
     np.testing.assert_allclose(
-        reference.merge_attention_head(attn, tokens, word_ends, word_ends),
-        attention.merge(attn, tokens, word_ends, word_ends),
+        reference.merge(attn, tokens, word_ends, word_ends),
+        optimized.merge(attn, tokens, word_ends, word_ends),
     )

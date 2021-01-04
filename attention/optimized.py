@@ -1,6 +1,6 @@
 import ctypes
 import pathlib
-from typing import List
+from typing import Sequence
 
 import numpy as np
 
@@ -26,7 +26,7 @@ except OSError:
     raise LoadDllError("attentionmodule.so", here)
 
 
-def strlist_to_char_p_p(lst: List[str]) -> "ctypes.Array[ctypes.c_char_p]":
+def strlist_to_char_p_p(lst: Sequence[str]) -> "ctypes.Array[ctypes.c_char_p]":
     """
     Converts a list of strings to a char**
     """
@@ -37,9 +37,9 @@ def strlist_to_char_p_p(lst: List[str]) -> "ctypes.Array[ctypes.c_char_p]":
 
 def merge(
     attention_in: np.ndarray,
-    tokens: List[str],
-    words: List[str],
-    word_ends: List[str],
+    tokens: Sequence[str],
+    words: Sequence[str],
+    word_ends: Sequence[str],
     verbosity: int = 0,
 ) -> np.ndarray:
     attention_in = attention_in.astype(np.float32)
