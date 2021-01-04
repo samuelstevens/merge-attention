@@ -26,7 +26,7 @@ except OSError:
     raise LoadDllError("attentionmodule.so", here)
 
 
-def strlist_to_char_p_p(lst: List[str]) -> ctypes.Array[ctypes.c_char_p]:
+def strlist_to_char_p_p(lst: List[str]) -> "ctypes.Array[ctypes.c_char_p]":
     """
     Converts a list of strings to a char**
     """
