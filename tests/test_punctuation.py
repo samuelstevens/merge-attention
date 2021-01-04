@@ -9,8 +9,33 @@ def test_paren_comma() -> None:
     word_ends = ["),", "),"]
     attention = np.array([[1.0]])
     merged = merge(attention, tokens, words, word_ends)
-    assert merged.shape == (2, 2)
-    np.testing.assert_allclose(merged[0, 0], 1.0, atol=1e-10)
-    np.testing.assert_allclose(merged[0, 1], 0.0, atol=1e-10)
-    np.testing.assert_allclose(merged[1, 0], 0.0, atol=1e-10)
-    np.testing.assert_allclose(merged[1, 1], 0.0, atol=1e-10)
+    expected = np.array([[1, 0], [0, 0]], dtype=np.float32)
+    np.testing.assert_allclose(merged, expected, atol=1e-10)
+
+
+def test_paren_comma_with_other_words() -> None:
+    tokens = ["at", "),", "Eq"]
+    words = ["at", ")", ",", "Eq"]
+    word_ends = ["at", "),", "),", "Eq"]
+    attention = np.ones((len(tokens), len(tokens)), dtype=np.float32)
+    merged = merge(attention, tokens, words, word_ends)
+    assert merged.shape == (4, 4)
+    expected = np.array(
+        [[1, 1, 0, 1], [1, 1, 0, 1], [0, 0, 0, 0], [1, 1, 0, 1]],
+        dtype=np.float32,
+    )
+    np.testing.assert_allclose(merged, expected, atol=1e-10)
+
+
+def test_paren_comma_with_many_words() -> None:
+    tokens = ["at", "),", "E", "q"]
+    words = ["at", ")", ",", "Eq"]
+    word_ends = ["at", "),", "),", "q"]
+    attention = np.ones((len(tokens), len(tokens)), dtype=np.float32)
+    merged = merge(attention, tokens, words, word_ends)
+    assert merged.shape == (4, 4)
+    expected = np.array(
+        [[1, 1, 0, 2], [1, 1, 0, 2], [0, 0, 0, 0], [1, 1, 0, 2]],
+        dtype=np.float32,
+    )
+    np.testing.assert_allclose(merged, expected)

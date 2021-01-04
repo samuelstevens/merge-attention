@@ -1,16 +1,65 @@
-from typing import List
+import logging
+from typing import List, Sequence, Tuple
 
 import numpy as np
 
 
+def split_precondition(
+    tokens: Sequence[str], words: Sequence[str], word_ends: Sequence[str]
+) -> bool:
+    """
+    In order to split, there must be a token that is two words. That means there is at least one duplicated word_end that is not a word.
+    """
+    duplicated_word_ends = []
+    for end1, end2 in zip(word_ends, word_ends[1:]):
+        if end1 == end2:
+            duplicated_word_ends.append(end1)
+
+    if not duplicated_word_ends:
+        return False
+
+    duplicate_not_word = False
+    for duplicate in duplicated_word_ends:
+        if duplicate not in words:
+            duplicate_not_word = True
+            break
+
+    if not duplicate_not_word:
+        return False
+
+    return True
+
+
+def split(
+    attention_in: np.ndarray,
+    tokens: Sequence[str],
+    words: Sequence[str],
+    word_ends: Sequence[str],
+    verbosity: int = 0,
+) -> Tuple[np.ndarray, List[str], List[str], List[str]]:
+
+    assert split_precondition(tokens, words, word_ends), "Split precondition not met."
+
+    # do nothing for now
+    logging.info(
+        "There is at least one token in this sentence that needs to be split. The code is too hard to write for now, so this does nothing."
+    )
+    return attention_in, tokens, words, word_ends
+
+
 def merge(
     attention_in: np.ndarray,
-    tokens: List[str],
-    words: List[str],
-    word_ends: List[str],
+    tokens: Sequence[str],
+    words: Sequence[str],
+    word_ends: Sequence[str],
     verbosity: int = 0,
 ) -> np.ndarray:
     assert attention_in.shape == (len(tokens), len(tokens))
+
+    if split_precondition(tokens, words, word_ends):
+        attention_in, tokens, words, word_ends = split(
+            attention_in, tokens, words, word_ends, verbosity
+        )
 
     if verbosity == 1:
         print(attention_in.shape)
@@ -70,6 +119,12 @@ def merge(
 
 
 if __name__ == "__main__":
+    tokens = ["AB"]
+    words = ["A", "B"]
+    word_ends = ["AB", "AB"]
+    attention = np.array([[1]], dtype=np.float32)
+    print(merge(attention, tokens, words, word_ends))
+
     tokens = ["[CLS]", "time", "-", "v", "ary", "ing", "[SEP]"]
     words = ["[CLS]", "time-varying", "[SEP]"]
     word_ends = ["[CLS]", "ing", "[SEP]"]
