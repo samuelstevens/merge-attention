@@ -4,19 +4,19 @@ import numpy as np
 
 
 def merge(
-    attention_head: np.ndarray,
+    attention_in: np.ndarray,
     tokens: List[str],
     words: List[str],
     word_ends: List[str],
-    verbose: int = 0,
+    verbosity: int = 0,
 ) -> np.ndarray:
-    assert attention_head.shape == (len(tokens), len(tokens))
+    assert attention_in.shape == (len(tokens), len(tokens))
 
-    if verbose == 1:
-        print(attention_head.shape)
+    if verbosity == 1:
+        print(attention_in.shape)
         print()
-    if verbose == 2:
-        print(attention_head)
+    if verbosity == 2:
+        print(attention_in)
         print()
 
     # step 1: merge attention *to* split words
@@ -27,16 +27,16 @@ def merge(
         attention_sum = 0
         word_j = -1
         for token_j, token_to in enumerate(tokens):
-            attention_sum += attention_head[token_i, token_j]
+            attention_sum += attention_in[token_i, token_j]
             if token_to in word_ends[word_j + 1 :]:
                 word_j = word_ends.index(token_to, word_j + 1)
                 merged_attention[token_i, word_j] = attention_sum
                 attention_sum = 0
 
-    if verbose == 1:
+    if verbosity == 1:
         print(merged_attention.shape)
         print()
-    if verbose == 2:
+    if verbosity == 2:
         print(merged_attention)
         print()
 
@@ -59,10 +59,10 @@ def merge(
                 attention_to_word = 0
                 tokens_to_word_count = 0
 
-    if verbose == 1:
+    if verbosity == 1:
         print(final_attention.shape)
         print()
-    if verbose == 2:
+    if verbosity == 2:
         print(final_attention)
         print()
 
@@ -74,22 +74,22 @@ if __name__ == "__main__":
     words = ["[CLS]", "time-varying", "[SEP]"]
     word_ends = ["[CLS]", "ing", "[SEP]"]
     attention = np.ones((len(tokens), len(tokens)))
-    print(merge(attention, tokens, words, word_ends, verbose=2))
+    print(merge(attention, tokens, words, word_ends, verbosity=2))
 
     tokens = ["straw", "##berries"]
     words = ["strawberries"]
     word_ends = ["##berries"]
     attention = np.array([[0.2, 0.8], [0.8, 0.2]])
-    print(merge(attention, tokens, words, word_ends, verbose=0))
+    print(merge(attention, tokens, words, word_ends, verbosity=0))
 
     tokens = ["straw", "##berries"]
     words = ["strawberries"]
     word_ends = ["##berries"]
     attention = np.array([[0.2, 0.8], [0.2, 0.8]])
-    print(merge(attention, tokens, words, word_ends, verbose=0))
+    print(merge(attention, tokens, words, word_ends, verbosity=0))
 
     tokens = ["and", "and"]
     words = ["and", "and"]
     word_ends = ["and", "and"]
     attention = np.array([[0.9, 0.1], [0.1, 0.9]])
-    print(merge(attention, tokens, words, word_ends, verbose=0))
+    print(merge(attention, tokens, words, word_ends, verbosity=0))
