@@ -1,6 +1,6 @@
 import numpy as np
 
-from attention.reference import merge
+from merge_attention.reference import merge
 
 
 def test_simple():

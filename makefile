@@ -12,10 +12,9 @@ clean: FORCE
 	rm -f *.so *.o
 	rm -rf build/
 	rm -rf dist/
-	rm -rf attention.egg-info
-	rm -f attention/attentionmodule.so
 	rm -rf htmlcov/
 	rm -f .coverage
+	cargo clean
 
 test: FORCE
 	python -m pytest --cov=attention tests/
