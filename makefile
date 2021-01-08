@@ -8,9 +8,16 @@ build/attentionmodule.o: src/attentionmodule.c
 	mkdir -p build
 	$(CC) $(CFLAGS) -c $? -o $@
 
-clean:
+clean: FORCE
 	rm -f *.so *.o
 	rm -rf build/
 	rm -rf dist/
 	rm -rf attention.egg-info
-	rm attention/attentionmodule.so
+	rm -f attention/attentionmodule.so
+	rm -rf htmlcov/
+	rm -f .coverage
+
+test: FORCE
+	python -m pytest --cov=attention tests/
+
+FORCE:

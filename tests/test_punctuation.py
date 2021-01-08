@@ -38,4 +38,4 @@ def test_paren_comma_with_many_words() -> None:
         [[1, 1, 0, 2], [1, 1, 0, 2], [0, 0, 0, 0], [1, 1, 0, 2]],
         dtype=np.float32,
     )
-    np.testing.assert_allclose(merged, expected)
+    np.testing.assert_allclose(merged, expected, atol=1e-10)

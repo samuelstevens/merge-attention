@@ -12,3 +12,4 @@ dist/
 .python-version
 
 attention.egg-info/
+.coverage
