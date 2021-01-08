@@ -6,8 +6,7 @@ import hypothesis.strategies as st
 import numpy as np
 from hypothesis import given
 
-import attention
-import reference
+from attention import optimized, reference
 
 np.seterr("raise")
 
@@ -21,7 +20,7 @@ def make_word_ends_from_tokens(tokens: List[str]) -> List[str]:
 
 @st.composite
 def array_tokens_word_ends(draw):
-    size = draw(st.integers(min_value=1, max_value=12))
+    size = draw(st.integers(min_value=1, max_value=16))
     arr = draw(hnp.arrays(np.float32, (size, size), elements=st.floats(0, 1, width=32)))
     tokens = draw(st.lists(st.text(), min_size=size, max_size=size, unique=True))
     word_ends = make_word_ends_from_tokens(tokens)
@@ -32,6 +31,6 @@ def array_tokens_word_ends(draw):
 def test_against_reference(args):
     attn, tokens, word_ends = args
     np.testing.assert_allclose(
-        reference.merge_attention_head(attn, tokens, word_ends, word_ends),
-        attention.merge(attn, tokens, word_ends, word_ends),
+        reference.merge(attn, tokens, word_ends, word_ends),
+        optimized.merge(attn, tokens, word_ends, word_ends),
     )

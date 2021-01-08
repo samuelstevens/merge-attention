@@ -1,8 +1,9 @@
 import ctypes
 import pathlib
-from typing import List
+from typing import Sequence
 
 import numpy as np
+
 from .errors import LoadDllError
 
 try:
@@ -25,7 +26,7 @@ except OSError:
     raise LoadDllError("attentionmodule.so", here)
 
 
-def strlist_to_char_p_p(lst: List[str]) -> ctypes.POINTER(ctypes.c_char_p):
+def strlist_to_char_p_p(lst: Sequence[str]) -> "ctypes.Array[ctypes.c_char_p]":
     """
     Converts a list of strings to a char**
     """
@@ -36,14 +37,16 @@ def strlist_to_char_p_p(lst: List[str]) -> ctypes.POINTER(ctypes.c_char_p):
 
 def merge(
     attention_in: np.ndarray,
-    tokens: List[str],
-    words: List[str],
-    word_ends: List[str],
+    tokens: Sequence[str],
+    words: Sequence[str],
+    word_ends: Sequence[str],
     verbosity: int = 0,
 ) -> np.ndarray:
     attention_in = attention_in.astype(np.float32)
     attention_out = np.zeros((len(words), len(words)), dtype=np.float32)
-    assert len(words) == len(word_ends)
+    assert len(words) == len(
+        word_ends
+    ), f"{words} (length {len(words)}) not same length as {word_ends} (length {len(word_ends)})"
 
     attention_dll.merge(
         attention_in,
