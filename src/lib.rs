@@ -2,6 +2,31 @@ use ndarray::{Array2, ArrayView2};
 use numpy::{IntoPyArray, PyArray2, PyReadonlyArray2};
 use pyo3::prelude::*;
 
+/// Checks if there are any duplicated word_ends that are not in words
+pub fn split_precondition(words: &Vec<&str>, word_ends: &Vec<&str>) -> bool {
+    let mut duplicated_word_ends = vec![];
+
+    for (end1, end2) in word_ends.iter().zip(word_ends[1..].iter()) {
+        if end1 == end2 {
+            duplicated_word_ends.push(end1);
+        }
+    }
+
+    if duplicated_word_ends.is_empty() {
+        return false;
+    }
+
+    let mut duplicate_not_in_word = false;
+    for duplicate in duplicated_word_ends.iter() {
+        if !words.contains(duplicate) {
+            duplicate_not_in_word = true;
+            break;
+        }
+    }
+
+    duplicate_not_in_word
+}
+
 pub fn merge(
     attention_in: ArrayView2<f32>,
     tokens: Vec<&str>,
@@ -9,8 +34,11 @@ pub fn merge(
     word_ends: Vec<&str>,
 ) -> Array2<f32> {
     assert_eq!(attention_in.len(), tokens.len() * tokens.len());
-    assert!(words.len() <= tokens.len());
-    assert!(words.len() == word_ends.len());
+
+    if !split_precondition(&words, &word_ends) {
+        assert!(words.len() <= tokens.len());
+        assert!(words.len() == word_ends.len());
+    }
 
     let mut merged_attention = Array2::<f32>::zeros((tokens.len(), words.len()));
 
@@ -91,6 +119,13 @@ mod tests {
         let attention = Array2::<f32>::ones((3, 3));
         let merged = merge(attention.view(), tokens, words, word_ends);
         assert_eq!(merged, attention);
+    }
+
+    #[test]
+    fn precondition() {
+        let words = vec!["A", "B"];
+        let word_ends = vec!["AB", "AB"];
+        assert!(split_precondition(&words, &word_ends));
     }
 }
 
