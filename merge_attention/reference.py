@@ -70,7 +70,7 @@ def merge(
 
     # step 1: merge attention *to* split words
 
-    merged_attention = np.zeros((len(tokens), len(words)))
+    merged_attention = np.zeros((len(tokens), len(words)), dtype=np.float32)
 
     for token_i, token_from in enumerate(tokens):
         attention_sum = 0
@@ -89,7 +89,7 @@ def merge(
         print(merged_attention)
         print()
 
-    final_attention = np.zeros((len(words), len(words)))
+    final_attention = np.zeros((len(words), len(words)), dtype=np.float32)
 
     # step 2: merge attention *from* split words
 
@@ -148,3 +148,13 @@ if __name__ == "__main__":
     word_ends = ["and", "and"]
     attention = np.array([[0.9, 0.1], [0.1, 0.9]])
     print(merge(attention, tokens, words, word_ends, verbosity=0))
+
+    tokens = ["A", "B", "C"]
+    words = ["A", "B", "C"]
+    word_ends = ["A", "B", "C"]
+    attention = np.array(
+        [[1e-16, 1e-16, 1e-16], [1e-16, 1e-16, 1e-16], [1e-16, 1e-16, 1e-16]],
+        dtype=np.float32,
+    )
+    print(merge(attention, tokens, words, word_ends, verbosity=0))
+

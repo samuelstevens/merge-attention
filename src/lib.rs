@@ -22,7 +22,7 @@ pub fn merge(
             if word_ends[word_j..].contains(token_to) {
                 word_j = match word_ends[word_j..].iter().position(|end| end == token_to) {
                     None => panic!("Just checked that token_to was in word_ends!"),
-                    Some(i) => i,
+                    Some(i) => i + word_j,
                 };
                 merged_attention[[token_i, word_j]] = attention_sum;
                 attention_sum = 0.0;
@@ -44,7 +44,7 @@ pub fn merge(
             if word_ends[word_i..].contains(token) {
                 word_i = match word_ends[word_i..].iter().position(|end| end == token) {
                     None => panic!("every word end must be contained in tokens!"),
-                    Some(i) => i,
+                    Some(i) => i + word_i,
                 };
 
                 let attention_from_word = attention_to_word / tokens_to_word_count as f32;
@@ -79,6 +79,16 @@ mod tests {
         let words = vec!["A", "B"];
         let word_ends = vec!["A", "B"];
         let attention = arr2(&[[0.2, 0.8], [0.2, 0.8]]);
+        let merged = merge(attention.view(), tokens, words, word_ends);
+        assert_eq!(merged, attention);
+    }
+
+    #[test]
+    fn three_by_three() {
+        let tokens = vec!["A", "B", "C"];
+        let words = vec!["A", "B", "C"];
+        let word_ends = vec!["A", "B", "C"];
+        let attention = Array2::<f32>::ones((3, 3));
         let merged = merge(attention.view(), tokens, words, word_ends);
         assert_eq!(merged, attention);
     }
