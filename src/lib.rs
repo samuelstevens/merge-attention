@@ -58,6 +58,8 @@ pub fn merge(
         }
     }
 
+    // println!("{:?}", merged_attention);
+
     let mut final_attention = Array2::zeros((words.len(), words.len()));
 
     for (word_j, _) in words.iter().enumerate() {
@@ -119,6 +121,28 @@ mod tests {
         let attention = Array2::<f32>::ones((3, 3));
         let merged = merge(attention.view(), tokens, words, word_ends);
         assert_eq!(merged, attention);
+    }
+
+    #[test]
+    fn first_word_merge() {
+        let tokens = vec!["A", "B", "C"];
+        let words = vec!["AB", "C"];
+        let word_ends = vec!["B", "C"];
+        let attention = Array2::<f32>::ones((3, 3));
+        let merged = merge(attention.view(), tokens, words, word_ends);
+        let expected = arr2(&[[2., 1.], [2., 1.]]);
+        assert_eq!(merged, expected);
+    }
+
+    #[test]
+    fn repeats() {
+        let tokens = vec!["A", "B", "A"];
+        let words = vec!["AB", "A"];
+        let word_ends = vec!["B", "A"];
+        let attention = Array2::<f32>::ones((3, 3));
+        let merged = merge(attention.view(), tokens, words, word_ends);
+        let expected = arr2(&[[2., 1.], [2., 1.]]);
+        assert_eq!(merged, expected);
     }
 
     #[test]
