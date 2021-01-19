@@ -47,18 +47,15 @@ pub fn merge(
         let mut word_j = 0;
         for (token_j, token_to) in tokens.iter().enumerate() {
             attention_sum += attention_in[[token_i, token_j]];
-            if word_ends[word_j..].contains(token_to) {
-                word_j = match word_ends[word_j..].iter().position(|end| end == token_to) {
-                    None => panic!("Just checked that token_to was in word_ends!"),
-                    Some(i) => i + word_j,
-                };
+            if *token_to == word_ends[word_j] {
                 merged_attention[[token_i, word_j]] = attention_sum;
                 attention_sum = 0.0;
+                word_j += 1;
             }
         }
     }
 
-    // println!("{:?}", merged_attention);
+    println!("{:?}", merged_attention);
 
     let mut final_attention = Array2::zeros((words.len(), words.len()));
 
