@@ -17,6 +17,6 @@ clean: FORCE
 	cargo clean
 
 test: FORCE
-	python -m pytest --cov=attention tests/
+	python -m pytest tests/
 
 FORCE:
