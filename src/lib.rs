@@ -67,17 +67,11 @@ pub fn merge(
         for (token_i, token) in tokens.iter().enumerate() {
             attention_to_word += merged_attention[[token_i, word_j]];
             tokens_to_word_count += 1;
-
-            if word_ends[word_i..].contains(token) {
-                word_i = match word_ends[word_i..].iter().position(|end| end == token) {
-                    None => panic!("every word end must be contained in tokens!"),
-                    Some(i) => i + word_i,
-                };
-
-                let attention_from_word = attention_to_word / tokens_to_word_count as f32;
-                final_attention[[word_i, word_j]] = attention_from_word;
+            if *token == word_ends[word_i] {
+                final_attention[[word_i, word_j]] = attention_to_word / tokens_to_word_count as f32;
                 attention_to_word = 0.0;
                 tokens_to_word_count = 0;
+                word_i += 1;
             }
         }
     }
