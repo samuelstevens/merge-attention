@@ -10,7 +10,7 @@ def make_word_ends_from_tokens(tokens: List[str]) -> List[str]:
     """
     pick word ends randomly, with 0.9 probability
     """
-    return [tok for tok in tokens if random.random() < 0.9]
+    return [tok for i, tok in enumerate(tokens) if i % 5 != 0]
 
 
 @st.composite

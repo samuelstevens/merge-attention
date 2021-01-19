@@ -74,13 +74,13 @@ def merge(
 
     for token_i, token_from in enumerate(tokens):
         attention_sum = 0
-        word_j = -1
+        word_j = 0
         for token_j, token_to in enumerate(tokens):
             attention_sum += attention_in[token_i, token_j]
-            if token_to in word_ends[word_j + 1 :]:
-                word_j = word_ends.index(token_to, word_j + 1)
+            if token_to == word_ends[word_j]:
                 merged_attention[token_i, word_j] = attention_sum
                 attention_sum = 0
+                word_j += 1
 
     if verbosity == 1:
         print(merged_attention.shape)
@@ -94,19 +94,19 @@ def merge(
     # step 2: merge attention *from* split words
 
     for word_j, word in enumerate(words):
-        word_i = -1
+        word_i = 0
         attention_to_word = 0
         tokens_to_word_count = 0
         for token_i, token in enumerate(tokens):
             attention_to_word += merged_attention[token_i, word_j]
             tokens_to_word_count += 1
 
-            if token in word_ends[word_i + 1 :]:
-                word_i = word_ends.index(token, word_i + 1)
+            if token == word_ends[word_i]:
                 attention_from_word = attention_to_word / tokens_to_word_count
                 final_attention[word_i, word_j] = attention_from_word
                 attention_to_word = 0
                 tokens_to_word_count = 0
+                word_i += 1
 
     if verbosity == 1:
         print(final_attention.shape)

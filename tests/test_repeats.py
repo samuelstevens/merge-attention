@@ -144,7 +144,7 @@ def test_the_smallest_so_far_reference():
     merged = reference.merge(attention, tokens, words, word_ends)
 
     expected = np.array([
-        [3, 1] for _ in range(len(words))
+        [2, 1] for _ in range(len(words))
     ], dtype=np.float32)
 
     np.testing.assert_allclose(merged, expected)
@@ -174,7 +174,7 @@ def test_minimal_example_with_repeat():
     word_ends = ['b', 'a']
     attention = np.ones((len(tokens), len(tokens)), dtype=np.float32)
 
-    merged = reference.merge(attention, tokens, words, word_ends)
+    merged = reference.merge(attention, tokens, words, word_ends, verbosity=2)
 
     expected = np.array([
         [2, 1] for _ in range(len(words))

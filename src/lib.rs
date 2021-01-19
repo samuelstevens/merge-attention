@@ -42,20 +42,29 @@ pub fn merge(
 
     let mut merged_attention = Array2::<f32>::zeros((tokens.len(), words.len()));
 
+    if word_ends.len() == 0 {
+        return merged_attention + attention_in;
+    }
+
     for (token_i, _) in tokens.iter().enumerate() {
         let mut attention_sum = 0.0;
         let mut word_j = 0;
         for (token_j, token_to) in tokens.iter().enumerate() {
             attention_sum += attention_in[[token_i, token_j]];
+            // println!("{} {}", word_ends[word_j], token_to);
             if *token_to == word_ends[word_j] {
                 merged_attention[[token_i, word_j]] = attention_sum;
                 attention_sum = 0.0;
+
                 word_j += 1;
+                while word_j < word_ends.len() && *word_ends[word_j - 1] == *word_ends[word_j] {
+                    word_j += 1;
+                }
             }
         }
     }
 
-    println!("{:?}", merged_attention);
+    // println!("{:?}", merged_attention);
 
     let mut final_attention = Array2::zeros((words.len(), words.len()));
 
@@ -67,11 +76,15 @@ pub fn merge(
         for (token_i, token) in tokens.iter().enumerate() {
             attention_to_word += merged_attention[[token_i, word_j]];
             tokens_to_word_count += 1;
+            // println!("{} {}", word_ends[word_i], token);
             if *token == word_ends[word_i] {
                 final_attention[[word_i, word_j]] = attention_to_word / tokens_to_word_count as f32;
                 attention_to_word = 0.0;
                 tokens_to_word_count = 0;
                 word_i += 1;
+                while word_i < word_ends.len() && *word_ends[word_i - 1] == *word_ends[word_i] {
+                    word_i += 1;
+                }
             }
         }
     }
@@ -133,6 +146,22 @@ mod tests {
         let attention = Array2::<f32>::ones((3, 3));
         let merged = merge(attention.view(), tokens, words, word_ends);
         let expected = arr2(&[[2., 1.], [2., 1.]]);
+        assert_eq!(merged, expected);
+    }
+
+    #[test]
+    fn repeat_word_ends() {
+        let tokens = vec!["a", "bc", "d", "e"];
+        let words = vec!["a", "b", "c", "de"];
+        let word_ends = vec!["a", "bc", "bc", "e"];
+        let attention = Array2::<f32>::ones((4, 4));
+        let merged = merge(attention.view(), tokens, words, word_ends);
+        let expected = arr2(&[
+            [1., 1., 0., 2.],
+            [1., 1., 0., 2.],
+            [0., 0., 0., 0.],
+            [1., 1., 0., 2.],
+        ]);
         assert_eq!(merged, expected);
     }
 
