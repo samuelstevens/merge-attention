@@ -36,7 +36,7 @@ def split(
     words: Sequence[str],
     word_ends: Sequence[str],
     verbosity: int = 0,
-) -> Tuple[np.ndarray, List[str], List[str], List[str]]:
+) -> Tuple[np.ndarray, Sequence[str], Sequence[str], Sequence[str]]:
 
     assert split_precondition(tokens, words, word_ends), "Split precondition not met."
 

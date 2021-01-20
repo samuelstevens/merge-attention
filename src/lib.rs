@@ -82,6 +82,9 @@ pub fn merge(
                 attention_to_word = 0.0;
                 tokens_to_word_count = 0;
                 word_i += 1;
+                // TODO: turn this check into a function that makes it clear what I'm checking
+                // (I'm checking if any word_ends are duplicated, like ")," "),")
+                // TODO: Does this break with examples that genuinely have two duplicates
                 while word_i < word_ends.len() && *word_ends[word_i - 1] == *word_ends[word_i] {
                     word_i += 1;
                 }
