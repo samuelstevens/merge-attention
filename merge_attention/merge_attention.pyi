@@ -1,7 +1,7 @@
-from typing import List
+from typing import Sequence
 
 import numpy as np
 
 
-def merge(attention_in: np.ndarray, tokens: List[str], words: List[str], word_ends: List[str]) -> np.ndarray:
+def merge(attention_in: np.ndarray, tokens: Sequence[str], words: Sequence[str], word_ends: Sequence[str]) -> np.ndarray:
     ...
