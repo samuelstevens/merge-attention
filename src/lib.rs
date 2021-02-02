@@ -169,6 +169,17 @@ mod tests {
     }
 
     #[test]
+    fn with_whitespace() {
+        let tokens = vec!["A", "B", " C"];
+        let words = vec!["AB", "C"];
+        let word_ends = vec!["B", "C"];
+        let attention = Array2::<f32>::ones((3, 3));
+        let merged = merge(attention.view(), tokens, words, word_ends);
+        let expected = arr2(&[[2., 1.], [2., 1.]]);
+        assert_eq!(merged, expected);
+    }
+
+    #[test]
     fn precondition() {
         let words = vec!["A", "B"];
         let word_ends = vec!["AB", "AB"];
